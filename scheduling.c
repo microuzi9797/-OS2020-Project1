@@ -5,39 +5,39 @@
 #include <sys/wait.h>
 #include "function.h"
 
-int compare(const void *data1,const void *data2);
+int compare(const void *data1, const void *data2);
 
-void scheduling(Process *proc,int N,int policy)
+void scheduling(Process *proc, int N, int policy)
 {
-	//separate main process and new process' CPUs
-	assign_CPU(getpid(),MAIN_CPU);
-    wake_up_process(getpid());
-	//initialize
+	// separate main process and new process' CPUs
+	assign_CPU(getpid(), MAIN_CPU);
+	wake_up_process(getpid());
+	// initialize
 	current_time = 0;
 	running_index = -1;
 	finished_num = 0;
-    for(int i = 0;i < N;i++)
-    {
-        proc[i].pid = -1;
-    }
-	//sort by ready time
-	qsort(proc,N,sizeof(Process),compare);
+	for(int i = 0;i < N;i++)
+	{
+		proc[i].pid = -1;
+	}
+	// sort by ready time
+	qsort(proc, N, sizeof(Process), compare);
 
-    while(1)
-    {
-		//the running process finished or not
+	while(1)
+	{
+		// the running process finished or not
 		if(running_index != -1 && proc[running_index].T == 0)
-        {
-			waitpid(proc[running_index].pid,NULL,0);
-			printf("%s %d\n",proc[running_index].Name,proc[running_index].pid);
+		{
+			waitpid(proc[running_index].pid, NULL, 0);
+			printf("%s %d\n", proc[running_index].Name, proc[running_index].pid);
 			running_index = -1;
 			finished_num++;
 			if(finished_num == N)
-            {
+			{
 				break;
-            }
+			}
 		}
-		//fork to create the process
+		// fork to create the process
 		for(int i = 0;i < N;i++)
 		{
 			if(proc[i].R == current_time)
@@ -46,12 +46,12 @@ void scheduling(Process *proc,int N,int policy)
 				block_process(proc[i].pid);
 			}
 		}
-		//pick next process
+		// pick next process
 		int next_index;
-		next_index = pick_next_process(proc,N,policy);
+		next_index = pick_next_process(proc, N, policy);
 		if(next_index != -1)
 		{
-			//context switch
+			// context switch
 			if(running_index != next_index)
 			{
 				wake_up_process(proc[next_index].pid);
@@ -60,7 +60,7 @@ void scheduling(Process *proc,int N,int policy)
 				last_time = current_time;
 			}
 		}
-		//time++
+		// time++
 		unit_time();
 		if(running_index != -1)
 		{
@@ -70,51 +70,51 @@ void scheduling(Process *proc,int N,int policy)
 	}
 }
 
-int compare(const void *data1,const void *data2)
+int compare(const void *data1, const void *data2)
 {
-    Process *ptr1 = (Process *)data1;
-    Process *ptr2 = (Process *)data2;
-    if(ptr1->R < ptr2->R)
-    {
-        return -1;
-    }
-    else if(ptr1->R > ptr2->R)
-    {
-        return 1;
-    }
-    else
-    {
-        return 0;
-    }
+	Process *ptr1 = (Process *)data1;
+	Process *ptr2 = (Process *)data2;
+	if(ptr1->R < ptr2->R)
+	{
+		return -1;
+	}
+	else if(ptr1->R > ptr2->R)
+	{
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
 }
 
-int pick_next_process(Process *proc,int N,int policy)
+int pick_next_process(Process *proc, int N, int policy)
 {
-	//non-preemptive
+	// non-preemptive
 	if(running_index != -1 && (policy == 1 || policy == 3))
 	{
 		return running_index;
 	}
 	int pick;
-	//policy: FIFO
+	// policy: FIFO
 	if(policy == 1)
 	{
-		pick = pick_by_FIFO(proc,N);
+		pick = pick_by_FIFO(proc, N);
 	}
-	//policy: RR
+	// policy: RR
 	else if(policy == 2)
 	{
-		pick = pick_by_RR(proc,N);
+		pick = pick_by_RR(proc, N);
 	}
-	//policy: SJF or PSJF
+	// policy: SJF or PSJF
 	else if(policy == 3 || policy == 4)
 	{
-		pick = pick_by_SJF_or_PSJF(proc,N);
+		pick = pick_by_SJF_or_PSJF(proc, N);
 	}
 	return pick;
 }
 
-int pick_by_FIFO(Process *proc,int N)
+int pick_by_FIFO(Process *proc, int N)
 {
 	int pick = -1;
 	for(int i = 0;i < N;i++)
@@ -131,7 +131,7 @@ int pick_by_FIFO(Process *proc,int N)
 	return pick;
 }
 
-int pick_by_RR(Process *proc,int N)
+int pick_by_RR(Process *proc, int N)
 {
 	int pick = -1;
 	if(running_index == -1)
@@ -160,7 +160,7 @@ int pick_by_RR(Process *proc,int N)
 	return pick;
 }
 
-int pick_by_SJF_or_PSJF(Process *proc,int N)
+int pick_by_SJF_or_PSJF(Process *proc, int N)
 {
 	int pick = -1;
 	for(int i = 0;i < N;i++)

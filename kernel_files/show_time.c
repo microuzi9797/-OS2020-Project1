@@ -3,6 +3,6 @@
 
 asmlinkage int sys_show_time(char *output)
 {
-    printk(output);
-    return 0;
+	printk(output);
+	return 0;
 }

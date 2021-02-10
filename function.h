@@ -19,12 +19,12 @@ static int finished_num;
 static int last_time;
 
 void unit_time();
-void scheduling(Process *proc,int N,int policy);
-void assign_CPU(pid_t pid,int core);
+void scheduling(Process *proc, int N, int policy);
+void assign_CPU(pid_t pid, int core);
 void wake_up_process(pid_t pid);
 pid_t create_process(Process proc);
 void block_process(pid_t pid);
-int pick_next_process(Process *proc,int N,int policy);
-int pick_by_FIFO(Process *proc,int N);
-int pick_by_RR(Process *proc,int N);
-int pick_by_SJF_or_PSJF(Process *proc,int N);
+int pick_next_process(Process *proc, int N, int policy);
+int pick_by_FIFO(Process *proc, int N);
+int pick_by_RR(Process *proc, int N);
+int pick_by_SJF_or_PSJF(Process *proc, int N);
